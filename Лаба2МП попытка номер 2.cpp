@@ -6,6 +6,8 @@ using namespace std;
 
 bool check_string(string input_string)
 {
+	if (input_string.empty())
+		return false;
 	bool dot_found = false;
 	for (int i = 0; i < input_string.length(); i++)
 	{
