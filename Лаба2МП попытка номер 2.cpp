@@ -1,7 +1,7 @@
-﻿#include <iostream>;
+#include <iostream>;
 #include <string>;
 #include <cmath>;
-#include<iomanip>;
+#include <iomanip>;
 using namespace std;
 
 bool check_string(string input_string)
@@ -39,14 +39,14 @@ double number_a(int n, double x)
 	return a;
 }
 
-double number_SN(int n, double x)
+double number_SN(double prev_SN, int n, double x)
 {
 	double current_a = number_a(n, x);
 	double next_a = number_a(n + 1, x);
-	double SN = next_a - current_a;
+	double SN = next_a + current_a + prev_SN;
+	current_a = next_a;
 	return SN;
 }
-
 double number_alphaN(int n, double x, double SN)
 {
 	double next_a = number_a(n + 1, x);
@@ -62,11 +62,13 @@ void output(int n, double a, double SN, double alphaN)
 	cout << endl;
 }
 
+
 int main()
 {
 	string answer;
 	double a;
 	double SN;
+	double prev_SN = 0;
 	int n = 1;
 	double alphaN;
 	do
@@ -101,12 +103,29 @@ int main()
 		}
 		double x = stod(input_x);
 		double alpha = stod(input_a);
-		if (alpha != int(alpha))
+		int y = 1;
+		if (alpha != int(alpha) && alpha < y)
 		{
-			do 
+			do
 			{
 				a = number_a(n, x);
-				SN = number_SN(n, x);
+				SN = number_SN(prev_SN, n, x);
+				prev_SN = SN;
+				alphaN = number_alphaN(n, x, SN);
+				output(n, a, SN, alphaN);
+				++n;
+			} while (alphaN > alpha);
+			cout << "Do you want to restart a programm? (y/n)\n";
+			cin >> answer;
+
+		}
+		if (alpha != int(alpha) && alpha > y)
+		{
+			do
+			{
+				a = number_a(n, x);
+				SN = number_SN(prev_SN, n, x);
+				prev_SN = SN;
 				alphaN = number_alphaN(n, x, SN);
 				output(n, a, SN, alphaN);
 				++n;
@@ -114,13 +133,14 @@ int main()
 			cout << "Do you want to restart a programm? (y/n)\n";
 			cin >> answer;
 
-		}
+		} 
 		if (alpha == int(alpha))
 		{
 			while (n <= alpha)
 			{
 				a = number_a(n, x);
-				SN = number_SN(n, x);
+				SN = number_SN(prev_SN, n, x);
+				prev_SN = SN;
 				alphaN = number_alphaN(n, x, SN);
 				output(n, a, SN, alphaN);
 				++n;
@@ -129,5 +149,6 @@ int main()
 			cin >> answer;
 
 		} cin.ignore();
+		prev_SN = 0;
 	} while (answer == "y");
 }
