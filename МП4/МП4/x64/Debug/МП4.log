@@ -1,0 +1,3 @@
+﻿  МП4.cpp
+C:\Users\mserg\source\repos\МП4\МП4\МП4.cpp(41,4): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  МП4.vcxproj -> C:\Users\mserg\source\repos\МП4\x64\Debug\МП4.exe
