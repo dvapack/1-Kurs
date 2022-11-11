@@ -1,0 +1,4 @@
+﻿  ПП4.cpp
+C:\Users\mserg\source\repos\ПП4\ПП4\ПП4.cpp(70,4): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\mserg\source\repos\ПП4\ПП4\ПП4.cpp(102,4): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  ПП4.vcxproj -> C:\Users\mserg\source\repos\ПП4\x64\Debug\ПП4.exe
