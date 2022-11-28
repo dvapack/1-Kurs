@@ -1,0 +1,4 @@
+﻿  MP5.cpp
+C:\Users\mserg\source\repos\MP5\MP5\MP5.cpp(371,10): warning C4551: в вызове функции отсутствует список аргументов
+C:\Users\mserg\source\repos\MP5\MP5\MP5.cpp(476,29): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+  MP5.vcxproj -> C:\Users\mserg\source\repos\MP5\x64\Debug\MP5.exe
