@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -37,6 +37,8 @@ private:
 		if (flag == 1)
 		{
 			int d = stoi(check);
+			if (d < 0)
+				return false;
 			int m = stoi(check.substr(3, 5));
 			if ((m > 12) || (m < 1))
 				return false;
@@ -60,7 +62,7 @@ private:
 		{
 			int h = stoi(check);
 			int mn = stoi(check.substr(3, 5));
-			if ((h > 24) || (mn > 60))
+			if ((h > 24) || (mn >= 60))
 				return false;
 			if (flag == 3)
 			{
@@ -172,6 +174,7 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter date in format day.mnth: ";
 		getline(in, ref.date);
+		//ref.date = "28.11";
 		ref.flag = 1;
 		if (!ref.check_string(ref.date, ref.flag, ref.start_time))
 		{
@@ -185,6 +188,7 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter start time in format hr:mnts: ";
 		getline(in, ref.start_time);
+		//ref.start_time = "12:00";
 		ref.flag = 2;
 		if (!ref.check_string(ref.start_time, ref.flag, ref.start_time))
 		{
@@ -198,6 +202,7 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter end time in format hr:mnts: ";
 		getline(in, ref.end_time);
+		//ref.end_time = "17:56";
 		ref.flag = 3;
 		if (!ref.check_string(ref.end_time, ref.flag, ref.start_time))
 		{
@@ -295,7 +300,7 @@ public:
 
 bool check_amount(string amount)
 {
-	if (amount.empty())
+	if ((amount.empty()) || (amount.size() > 100))
 		return false;
 	for (int i = 0; i < amount.size(); ++i)
 	{
@@ -368,7 +373,7 @@ int main()
 				{
 					cout << "Enter amount of workers you want to add: ";
 					getline(cin, amount);
-					if (!check_amount)
+					if (!check_amount(amount))
 					{
 						cout << "Error! Please enter correct amount" << endl;
 					}
@@ -384,6 +389,7 @@ int main()
 					{
 						cout << "Please enter " << i + 1 << " worker name: ";
 						getline(cin, name);
+						//name = "peter";
 						if (!check_name(name))
 							cout << "Error! Please enter correct name" << endl;
 						else
@@ -452,7 +458,7 @@ int main()
 			}
 			else
 			{
-				ofstream fout("output.txt", ios_base::app);
+				ofstream fout("output.txt");
 				if (!fout.is_open()) // небольшая проверка на наличие файла
 				{
 					throw runtime_error("This file cant be opened");
