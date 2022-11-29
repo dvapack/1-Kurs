@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <limits>
 
+int correct_flag = 0;
+
 using namespace std;
 
 class WorkTime
@@ -231,7 +233,7 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 		ref.flag = 1;
 		if (!ref.check_string(ref.date, ref.flag, ref.start_time))
 		{
-			throw runtime_error("Incorrect input");
+			throw runtime_error("Incorrect date");
 		}
 		else
 			ref.check_input = true;
@@ -243,7 +245,7 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 		ref.flag = 2;
 		if (!ref.check_string(ref.start_time, ref.flag, ref.start_time))
 		{
-			throw runtime_error("Incorrect input");
+			throw runtime_error("Incorrect start time");
 		}
 		else
 			ref.check_input = true;
@@ -255,7 +257,7 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 		ref.flag = 3;
 		if (!ref.check_string(ref.end_time, ref.flag, ref.start_time))
 		{
-			throw runtime_error("Incorrect input");
+			throw runtime_error("Incorrect end time");
 		}
 		else
 			ref.check_input = true;
@@ -346,79 +348,87 @@ int main()
 	string name;
 	string amount;
 	vector <Worker> workers;
+	int correct_flag;
 	do
 	{
-		try
+		correct_flag = 0;
+		WorkTime work_time;
+		correct_int = false;
+		if (sec_flag == 0)
 		{
-			WorkTime work_time;
-			correct_int = false;
-			if (sec_flag == 0)
+			while (!correct_int)
 			{
-				while (!correct_int)
-				{
-					cout << "Where do you want to read information? For console enter 0, for text file - 1: ";
-					getline(cin, choose);
-					if (!check_int(choose))
-						cout << "Error! Please enter 0 or 1" << endl;
-					else
-						correct_int = true;
-				}
-				third_flag = stoi(choose);
+				cout << "Where do you want to read information? For console enter 0, for text file - 1: ";
+				getline(cin, choose);
+				if (!check_int(choose))
+					cout << "Error! Please enter 0 or 1" << endl;
+				else
+					correct_int = true;
 			}
+			third_flag = stoi(choose);
+		}
+		correct_int = false;
+		if (!third_flag)
+		{
 			correct_int = false;
-			if (!third_flag)
+			while (!correct_int)
+			{
+				cout << "Enter amount of workers you want to add: ";
+				getline(cin, amount);
+				if (!check_amount(amount))
+				{
+					cout << "Error! Please enter correct amount" << endl;
+				}
+				else
+					correct_int = true;
+			}
+			int am = stoi(amount) + prev_size;
+			workers.resize(am);
+			for (int i = prev_size; i < workers.size(); ++i)
 			{
 				correct_int = false;
 				while (!correct_int)
 				{
-					cout << "Enter amount of workers you want to add: ";
-					getline(cin, amount);
-					if (!check_amount(amount))
-					{
-						cout << "Error! Please enter correct amount" << endl;
-					}
+					cout << "Please enter " << i + 1 << " worker name: ";
+					getline(cin, name);
+					//name = "peter";
+					if (!check_name(name))
+						cout << "Error! Please enter correct name" << endl;
 					else
-						correct_int = true;
-				}
-				int am = stoi(amount) + prev_size;
-				workers.resize(am);
-				for (int i = prev_size; i < workers.size(); ++i)
-				{
-					correct_int = false;
-					while (!correct_int)
 					{
-						cout << "Please enter " << i + 1 << " worker name: ";
-						getline(cin, name);
-						//name = "peter";
-						if (!check_name(name))
-							cout << "Error! Please enter correct name" << endl;
-						else
-						{
-							correct_int = true;
-						}
+						correct_int = true;
 					}
-					correct_int = false;
-					cin >> work_time;
-					work_time.time();
-					cout << "name: " << name << work_time << endl;
-					Worker guy(name, work_time);
-					workers[i] = guy;
 				}
-				answ = "n";
+				correct_int = false;
+				cin >> work_time;
+				work_time.time();
+				cout << "name: " << name << work_time << endl;
+				Worker guy(name, work_time);
+				workers[i] = guy;
+			}
+		}
+		else
+		{
+			workers.clear();
+			ifstream fin("test1.txt");
+			if (!fin.is_open()) // небольшая проверка на наличие файла
+			{
+				throw runtime_error("This file cant be opened");
 			}
 			else
 			{
-				workers.clear();
-				ifstream fin("test1.txt");
-				if (!fin.is_open()) // небольшая проверка на наличие файла
+				int str = 1;
+				while (!fin.eof())
 				{
-					throw runtime_error("This file cant be opened");
-				}
-				else
-				{
-					while (!fin.eof())
+					try
 					{
-						while (!n_flag)
+						if (correct_flag)
+						{
+							string buf;
+							getline(fin, buf);
+							buf.clear();
+						}
+						while (!n_flag && !fin.eof())
 						{
 							if (!correct_int)
 							{
@@ -428,55 +438,63 @@ int main()
 							}
 							fin >> work_time;
 							n_flag = 1;
+							work_time.time();
+							Worker guy(name, work_time);
+							workers.push_back(guy);
+							/*n_flag = 0;
+							correct_int = 0;*/
 						}
-						work_time.time();
+						/*work_time.time();
 						Worker guy(name, work_time);
-						workers.push_back(guy);
+						workers.push_back(guy);*/
 						n_flag = 0;
+						correct_int = 0;
+						++str;
 					}
-					fin.close();
+					catch (runtime_error & e)
+					{
+						cout << e.what() << " in "<< str << " string " << endl;
+						correct_flag = 1;
+						++str;
+					}
 				}
+				fin.close();
 			}
-			correct_int = false;
-			while (!correct_int)
-			{
-				cout << "Where do you want to output information? For console enter 0, for text file - 1: ";
-				getline(cin, choose);
-				if (!check_int(choose))
-					cout << "Error! Please enter 0 or 1" << endl;
-				else
-					correct_int = true;
-			}
-			third_flag = stoi(choose);
-			if (!third_flag)
-			{
-				cout << "all workers: \n";
-				for (int i = 0; i < workers.size(); ++i)
-				{
-					cout << "name: " << setw(7) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
-				}
-			}
-			else
-			{
-				ofstream fout("output.txt");
-				if (!fout.is_open()) // небольшая проверка на наличие файла
-				{
-					throw runtime_error("This file cant be opened");
-				}
-				for (int i = 0; i < workers.size(); ++i)
-				{
-					fout << "name: " << setw(10) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
-				}
-				fout.close();
-			}
-			cout << "Do you want to continue? (any symbol/n): ";
-			getline(cin, answ);
 		}
-		catch (runtime_error& e)
+		correct_int = false;
+		while (!correct_int)
 		{
-			cout << e.what() << endl;
-			answ = "n";
+			cout << "Where do you want to output information? For console enter 0, for text file - 1: ";
+			getline(cin, choose);
+			if (!check_int(choose))
+				cout << "Error! Please enter 0 or 1" << endl;
+			else
+				correct_int = true;
 		}
+		third_flag = stoi(choose);
+		if (!third_flag)
+		{
+			cout << "all workers: \n";
+			for (int i = 0; i < workers.size(); ++i)
+			{
+				cout << "name: " << setw(7) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
+			}
+		}
+		else
+		{
+			ofstream fout("output.txt");
+			if (!fout.is_open()) // небольшая проверка на наличие файла
+			{
+				throw runtime_error("This file cant be opened");
+			}
+			for (int i = 0; i < workers.size(); ++i)
+			{
+				fout << "name: " << setw(10) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
+			}
+			fout.close();
+		}
+		cout << "Do you want to continue? (any symbol/n): ";
+		getline(cin, answ);
 		cout << endl;
 		sec_flag = 0;
 		prev_size = workers.size();
