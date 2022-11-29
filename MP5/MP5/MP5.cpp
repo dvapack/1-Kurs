@@ -80,18 +80,9 @@ public:
 
 	WorkTime()
 	{
-		day = 1;
-		month = 1;
-		start_hour = 0;
-		start_minutes = 0;
-		end_hour = 0;
-		end_minutes = 0;
-		date = " ";
-		start_time = " ";
-		end_time = " ";
-		work_hours = 0;
-		work_minutes = 0;
-		work_time = "00:00";
+		date = "05.05";
+		start_time = "05:05";
+		end_time = "06:06";
 	}
 
 	void time()
@@ -139,10 +130,12 @@ public:
 		this->work_hours = ref_WorkTime.work_hours;
 		this->work_minutes = ref_WorkTime.work_minutes;
 	}
+
 	string get_work_date()
 	{
 		return date;
 	}
+
 	string get_start_time()
 	{
 		return start_time;
@@ -176,7 +169,6 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter date in format day.mnth: ";
 		getline(in, ref.date);
-		//ref.date = "28.11";
 		ref.flag = 1;
 		if (!ref.check_string(ref.date, ref.flag, ref.start_time))
 		{
@@ -190,7 +182,6 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter start time in format hr:mnts: ";
 		getline(in, ref.start_time);
-		//ref.start_time = "12:00";
 		ref.flag = 2;
 		if (!ref.check_string(ref.start_time, ref.flag, ref.start_time))
 		{
@@ -204,7 +195,6 @@ istream& operator>>(istream& in, WorkTime& ref)
 	{
 		cout << "Enter end time in format hr:mnts: ";
 		getline(in, ref.end_time);
-		//ref.end_time = "17:56";
 		ref.flag = 3;
 		if (!ref.check_string(ref.end_time, ref.flag, ref.start_time))
 		{
@@ -218,8 +208,6 @@ istream& operator>>(istream& in, WorkTime& ref)
 
 ofstream& operator<<(ofstream& out, const WorkTime& ref)
 {
-	/*out << ref.date << endl << ref.start_time << endl << ref.end_time << endl << ref.day << endl << ref.month << endl << ref.work_time;
-	return out;*/
 	out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time " << ref.end_time << " | work time " << ref.work_time << "\n";
 	return out;
 }
@@ -270,8 +258,6 @@ class Worker
 private:
 	string name;
 	WorkTime time;
-	WorkTime date;
-
 public:
 	Worker()
 	{
@@ -339,9 +325,7 @@ int main()
 {
 	string answ;
 	string choose;
-	int flag = 0;
-	int sec_flag = 0;
-	int third_flag = 0;
+	int input_choice = 0;
 	int n_flag = 0;
 	int prev_size = 0;
 	bool correct_int;
@@ -354,21 +338,18 @@ int main()
 		correct_flag = 0;
 		WorkTime work_time;
 		correct_int = false;
-		if (sec_flag == 0)
+		while (!correct_int)
 		{
-			while (!correct_int)
-			{
-				cout << "Where do you want to read information? For console enter 0, for text file - 1: ";
-				getline(cin, choose);
-				if (!check_int(choose))
-					cout << "Error! Please enter 0 or 1" << endl;
-				else
-					correct_int = true;
-			}
-			third_flag = stoi(choose);
+			cout << "Where do you want to read information? For console enter 0, for text file - 1: ";
+			getline(cin, choose);
+			if (!check_int(choose))
+				cout << "Error! Please enter 0 or 1" << endl;
+			else
+				correct_int = true;
 		}
+		input_choice = stoi(choose);
 		correct_int = false;
-		if (!third_flag)
+		if (!input_choice)
 		{
 			correct_int = false;
 			while (!correct_int)
@@ -391,7 +372,6 @@ int main()
 				{
 					cout << "Please enter " << i + 1 << " worker name: ";
 					getline(cin, name);
-					//name = "peter";
 					if (!check_name(name))
 						cout << "Error! Please enter correct name" << endl;
 					else
@@ -428,32 +408,19 @@ int main()
 							getline(fin, buf);
 							buf.clear();
 						}
-						while (!n_flag && !fin.eof())
-						{
-							if (!correct_int)
-							{
-								fin >> name;
-								if (!check_name(name))
-									throw runtime_error("Incorrect worker name");
-							}
-							fin >> work_time;
-							n_flag = 1;
-							work_time.time();
-							Worker guy(name, work_time);
-							workers.push_back(guy);
-							/*n_flag = 0;
-							correct_int = 0;*/
-						}
-						/*work_time.time();
+						fin >> name;
+						if (!check_name(name))
+							throw runtime_error("Incorrect worker name");
+						fin >> work_time;
+						work_time.time();
 						Worker guy(name, work_time);
-						workers.push_back(guy);*/
-						n_flag = 0;
-						correct_int = 0;
+						workers.push_back(guy);
+						correct_flag = 0;
 						++str;
 					}
-					catch (runtime_error & e)
+					catch (runtime_error& e)
 					{
-						cout << e.what() << " in "<< str << " string " << endl;
+						cout << e.what() << " in " << str << " string " << endl;
 						correct_flag = 1;
 						++str;
 					}
@@ -471,8 +438,8 @@ int main()
 			else
 				correct_int = true;
 		}
-		third_flag = stoi(choose);
-		if (!third_flag)
+		input_choice = stoi(choose);
+		if (!input_choice)
 		{
 			cout << "all workers: \n";
 			for (int i = 0; i < workers.size(); ++i)
@@ -496,7 +463,6 @@ int main()
 		cout << "Do you want to continue? (any symbol/n): ";
 		getline(cin, answ);
 		cout << endl;
-		sec_flag = 0;
 		prev_size = workers.size();
 	} while (answ != "n");
 }
