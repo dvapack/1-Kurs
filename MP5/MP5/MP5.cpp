@@ -20,7 +20,7 @@ private:
 	string start_time;
 	string end_time;
 	bool check_input;
-	int flag;
+	//int flag;
 	int work_hours, work_minutes;
 	string work_time;
 	bool check_string(string check, const int& flag, string prev_string)
@@ -125,7 +125,7 @@ public:
 		this->date = ref_WorkTime.date;
 		this->start_time = ref_WorkTime.start_time;
 		this->end_time = ref_WorkTime.end_time;
-		this->flag = ref_WorkTime.flag;
+		//this->flag = ref_WorkTime.flag;
 		this->work_time = ref_WorkTime.work_time;
 		this->work_hours = ref_WorkTime.work_hours;
 		this->work_minutes = ref_WorkTime.work_minutes;
@@ -154,11 +154,26 @@ public:
 	friend istream& operator>>(istream& in, WorkTime& ref);
 	friend ofstream& operator<<(ofstream& out, const WorkTime& ref);
 	friend ifstream& operator>>(ifstream& in, WorkTime& ref);
+	bool operator > (const WorkTime& ref)
+	{
+		int dif = work_hours - ref.work_hours;
+		if (dif > 0)
+			return true;
+		if (dif == 0)
+		{
+			int min_dif = work_minutes - ref.work_minutes;
+			if (min_dif > 0)
+				return true;
+		}
+		else
+			return false;
+	}
 };
 
 ostream& operator<<(ostream& out, const WorkTime& ref)
 {
-	out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time " << ref.end_time << " | work time " << ref.work_time;
+	//out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time " << ref.end_time << " | work time " << ref.work_time << "\n";
+	out << " " << ref.date << " " << ref.start_time << " " << ref.end_time << " " << ref.work_time << "\n";
 	return out;
 }
 
@@ -208,18 +223,20 @@ istream& operator>>(istream& in, WorkTime& ref)
 
 ofstream& operator<<(ofstream& out, const WorkTime& ref)
 {
-	out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time " << ref.end_time << " | work time " << ref.work_time << "\n";
+	//out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time " << ref.end_time << " | work time " << ref.work_time << "\n";
+	out << " " << ref.date << " " << ref.start_time << " " << ref.end_time << " " << ref.work_time << "\n";
 	return out;
 }
 
 ifstream& operator>>(ifstream& in, WorkTime& ref)
 {
+	int flag;
 	ref.check_input = false;
 	while (!ref.check_input)
 	{
 		in >> ref.date;
-		ref.flag = 1;
-		if (!ref.check_string(ref.date, ref.flag, ref.start_time))
+		flag = 1;
+		if (!ref.check_string(ref.date, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect date");
 		}
@@ -230,8 +247,8 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 	while (!ref.check_input)
 	{
 		in >> ref.start_time;
-		ref.flag = 2;
-		if (!ref.check_string(ref.start_time, ref.flag, ref.start_time))
+		flag = 2;
+		if (!ref.check_string(ref.start_time, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect start time");
 		}
@@ -242,8 +259,8 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 	while (!ref.check_input)
 	{
 		in >> ref.end_time;
-		ref.flag = 3;
-		if (!ref.check_string(ref.end_time, ref.flag, ref.start_time))
+		flag = 3;
+		if (!ref.check_string(ref.end_time, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect end time");
 		}
@@ -268,6 +285,11 @@ public:
 		this->name = name;
 		this->time = time;
 	}
+	Worker(const Worker& ref_Worker)
+	{
+		this->name = ref_Worker.name;
+		this->time = ref_Worker.time;
+	}
 	string get_name()
 	{
 		return name;
@@ -284,7 +306,30 @@ public:
 	{
 		return time.get_work_time();
 	}
+	friend ostream& operator<<(ostream& out, const Worker& ref);
+	friend ofstream& operator<<(ofstream& out, const Worker& ref);
+	bool operator > (const Worker& ref)
+	{
+		if (time > ref.time)
+			return true;
+		else
+			return false;
+	}
 };
+
+ostream& operator<<(ostream& out, const Worker& ref)
+{
+	out << ref.name << ref.time;
+	return out;
+}
+
+ofstream& operator<<(ofstream& out, const Worker& ref)
+{
+	out << ref.name << ref.time;
+	return out;
+}
+
+
 
 bool check_amount(string amount)
 {
@@ -390,7 +435,7 @@ int main()
 		else
 		{
 			workers.clear();
-			ifstream fin("test1.txt");
+			ifstream fin("output.txt");
 			if (!fin.is_open()) // небольшая проверка на наличие файла
 			{
 				throw runtime_error("This file cant be opened");
@@ -406,6 +451,8 @@ int main()
 						{
 							string buf;
 							getline(fin, buf);
+							if (fin.peek() == EOF)
+								break;
 							buf.clear();
 						}
 						fin >> name;
@@ -415,10 +462,10 @@ int main()
 						work_time.time();
 						Worker guy(name, work_time);
 						workers.push_back(guy);
-						correct_flag = 0;
+						correct_flag = 1;
 						++str;
 					}
-					catch (runtime_error& e)
+					catch (runtime_error & e)
 					{
 						cout << e.what() << " in " << str << " string " << endl;
 						correct_flag = 1;
@@ -444,7 +491,14 @@ int main()
 			cout << "all workers: \n";
 			for (int i = 0; i < workers.size(); ++i)
 			{
-				cout << "name: " << setw(7) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
+				//cout << "name: " << setw(7) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
+				//cout << workers[i].get_name();
+				cout << workers[i];
+				if (i)
+				{
+					if (workers[i] > workers[i - 1])
+						cout << workers[i].get_name() << " works more than previous worker\n";
+				}
 			}
 		}
 		else
@@ -456,7 +510,9 @@ int main()
 			}
 			for (int i = 0; i < workers.size(); ++i)
 			{
-				fout << "name: " << setw(10) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
+				//fout << workers[i].get_name() << workers[i].get_st_time() << workers[i].get_end_time() << workers[i].get_time() << endl;
+				//fout << workers[i].get_name();
+				fout << workers[i];
 			}
 			fout.close();
 		}
