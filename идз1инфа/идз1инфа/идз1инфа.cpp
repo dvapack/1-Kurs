@@ -1,5 +1,4 @@
-﻿#include <iostream>
-#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -21,15 +20,16 @@ string work_time(vector <string>& work_inf)
 	{
 		days = stoi(work_inf[i].substr(0, 2));
 		month = stoi(work_inf[i].substr(3, 2));
-		minutes[i] = (days * month * stoi(work_inf[i].substr(7, 2)) * 60 + stoi(work_inf[i].substr(10, 2))) + ((days_per_month[month] - (days_in_month[month] - days))) * 60 + 1;
+		//minutes[i] = (days * month * stoi(work_inf[i].substr(7, 2)) * 60 + stoi(work_inf[i].substr(10, 2))) + ((days_per_month[month-1] - (days_in_month[month-1] - days))) * 60 + 1;
+		minutes[i] = (stoi(work_inf[i].substr(7, 2)) * 60 + stoi(work_inf[i].substr(10, 2))) + ((days_per_month[month - 1] - (days_in_month[month - 1] - days - 1))) * 24 * 60 + 1;
 		work_inf[i].clear();
 	}
 	sort(minutes.begin(), minutes.end());
 	for (int i = 1; i < minutes.size(); i += 2)
 	{
 		minutes[i] = minutes[i] - minutes[i - 1];
-		if (minutes[i] > 6 * 60)
-			minutes[i] -= (24 - 6 * 60) * (minutes[i] / 6 * 60);
+		if (minutes[i] > 8 * 60)
+			minutes[i] -= (24 - 8 * 60) * (minutes[i] / 6 * 60);
 		min += minutes[i];
 	}
 	minut = to_string(min / 60);
@@ -44,17 +44,14 @@ string work_time(vector <string>& work_inf)
 
 int main()
 {
-	int num = 0;
-	ifstream fin("input.txt");
-	fin >> num;
+	string n;
+	getline(cin, n);
+	int num = stoi(n);
 	vector <string> work_inf(num);
 	int i = 0;
-	while (!fin.eof() && i < num)
-	{
-		getline(fin, work_inf[i]);
-		++i;
-	}
 	for (int i = 0; i < num; ++i)
-		cout << work_inf[i] << endl;
-	//cout << work_time(work_inf);
+		getline(cin, work_inf[i]);
+	//for (int i = 0; i < num; ++i)
+	//	cout << work_inf[i] << endl;
+	cout << work_time(work_inf);
 }
