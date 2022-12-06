@@ -1,0 +1,14 @@
+﻿  ConsoleApplication10.cpp
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(14,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(88,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(98,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(118,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(141,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(151,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(171,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(193,22): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(334,8): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(339,19): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(340,39): warning C4244: аргумент: преобразование "double" в "const unsigned int", возможна потеря данных
+C:\Users\serg\source\repos\ConsoleApplication10\ConsoleApplication10\ConsoleApplication10.cpp(343,11): warning C4018: >: несоответствие типов со знаком и без знака
+  ConsoleApplication10.vcxproj -> C:\Users\serg\source\repos\ConsoleApplication10\Debug\ConsoleApplication10.exe
