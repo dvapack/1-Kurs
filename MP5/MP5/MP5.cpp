@@ -91,10 +91,10 @@ public:
 	WorkTime()
 	{
 		day = 5;
-		month =	5;
+		month = 5;
 		start_hour = 5;
 		start_minutes = 5;
-		end_hour = 6; 
+		end_hour = 6;
 		end_minutes = 6;
 		work_hours = 1;
 		work_minutes = 1;
@@ -114,6 +114,23 @@ public:
 		}
 	}
 
+	/*int int_time()
+	{
+		int buff;
+		int min_buff;
+		if (end_minutes < start_minutes)
+		{
+			buff = end_hour - start_hour - 1;
+			min_buff = 60 - start_minutes + end_minutes;
+		}
+		else
+		{
+			buff = end_hour - start_hour;
+			min_buff = end_minutes - start_minutes;
+		}
+		return buff, min_buff;
+	}*/
+
 	WorkTime(const WorkTime& ref_WorkTime)
 	{
 		this->day = ref_WorkTime.day;
@@ -130,6 +147,7 @@ public:
 	friend istream& operator>>(istream& in, WorkTime& ref);
 	friend ofstream& operator<<(ofstream& out, const WorkTime& ref);
 	friend ifstream& operator>>(ifstream& in, WorkTime& ref);
+
 	bool operator > (const WorkTime& ref)
 	{
 		int dif = work_hours - ref.work_hours;
@@ -143,6 +161,65 @@ public:
 		}
 		else
 			return false;
+	}
+
+	bool operator < (WorkTime& ref)
+	{
+		int dif;
+		int min_dif;
+		//int min_dif = int_time() - ref.int_time();
+
+
+		/*if ((end_minutes < start_minutes) && (ref.end_minutes > ref.start_minutes))
+		{
+			dif = (end_hour - start_hour - 1) - (ref.end_hour - ref.start_hour);
+			if (dif > 0)
+				return false;
+			if (dif == 0)
+			{
+				min_dif = (60 - start_minutes + end_minutes) - (ref.end_minutes - ref.start_minutes);
+				if (min_dif > 0)
+					return false;
+			}
+		}
+		if ((end_minutes > start_minutes) && (ref.end_minutes < ref.start_minutes))
+		{
+			dif = (end_hour - start_hour) - (ref.end_hour - ref.start_hour - 1);
+			if (dif > 0)
+				return false;
+			if (dif == 0)
+			{
+				min_dif = (end_minutes - start_minutes) - (60 - ref.start_minutes + ref.end_minutes);
+				if (min_dif > 0)
+					return false;
+			}
+		}
+		if ((end_minutes < start_minutes) && (ref.end_minutes < ref.start_minutes))
+		{
+			dif = (end_hour - start_hour - 1) - (ref.end_hour - ref.start_hour - 1);
+			if (dif > 0)
+				return false;
+			if (dif == 0)
+			{
+				min_dif = (60 - start_minutes + end_minutes) - (60 - ref.end_minutes + ref.start_minutes);
+				if (min_dif > 0)
+					return false;
+			}
+		}
+		if((end_minutes > start_minutes) && (ref.end_minutes > ref.start_minutes))
+		{
+			dif = (end_hour - start_hour) - (ref.end_hour - ref.start_hour);
+			if (dif > 0)
+				return false;
+			if (dif == 0)
+			{
+				min_dif = (end_minutes - start_minutes) - (ref.end_minutes - ref.start_minutes);
+				if (min_dif > 0)
+					return false;
+			}
+		}
+		else
+			return true;*/
 	}
 };
 
@@ -286,12 +363,19 @@ public:
 		else
 			return false;
 	}
+	bool operator < (const Worker& ref)
+	{
+		if (time > ref.time)
+			return false;
+		else
+			return true;
+	}
 };
 
 ostream& operator<<(ostream& out, const Worker& ref)
 {
 	out << "name: " << setw(10) << ref.name;
-	out	<< ref.time;
+	out << ref.time;
 	return out;
 }
 
@@ -408,7 +492,7 @@ int main()
 		else
 		{
 			workers.clear();
-			ifstream fin("output.txt");
+			ifstream fin("test1.txt");
 			if (!fin.is_open()) // небольшая проверка на наличие файла
 			{
 				throw runtime_error("This file cant be opened");
@@ -438,7 +522,7 @@ int main()
 						correct_flag = 1;
 						++str;
 					}
-					catch (runtime_error& e)
+					catch (runtime_error & e)
 					{
 						cout << e.what() << " in " << str << " string " << endl;
 						correct_flag = 1;
@@ -471,6 +555,8 @@ int main()
 				{
 					if (workers[i] > workers[i - 1])
 						cout << "-------\n" << "kamenshchik " << workers[i].get_name() << " works more than previous lent'yai\n" << "-------\n";
+					if (workers[i] < workers[i - 1])
+						cout << "-------\n" << "lent'yai " << workers[i].get_name() << " works less than previous kamenshchik\n" << "-------\n";
 				}
 			}
 		}
