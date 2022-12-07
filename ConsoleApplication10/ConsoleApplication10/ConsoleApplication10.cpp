@@ -1,19 +1,96 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
-#include <cmath>   // подключаем библиотеки
-#include <iomanip>
 #include <vector>
+#include <map>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
-bool check_string(string input_string) // функция для проверки ввода
+class SavedNumbers
 {
-	if (input_string.empty()) // для отслеживания пустой строки
+private:
+	double n, an, SN, alphaN;
+public:
+	SavedNumbers()
+	{
+		n = an = SN = alphaN = 0;
+	}
+	SavedNumbers(const double& i, const double& aN, const double& SumN, const double& alphN)
+	{
+		n = i;
+		an = aN;
+		SN = SumN;
+		alphaN = alphN;
+	}
+	double get_n()
+	{
+		return n;
+	}
+	double get_an()
+	{
+		return an;
+	}
+	double get_SN()
+	{
+		return SN;
+	}
+	double get_alphaN()
+	{
+		return alphaN;
+	}
+};
+
+class SavedX
+{
+private:
+	double x;
+	vector <SavedNumbers> x_numbers;
+public:
+	SavedX(const double& X)
+	{
+		x = X;
+	}
+	double get_x()
+	{
+		return x;
+	}
+	void set_x_numbers(const SavedNumbers& numbers)
+	{
+		x_numbers.push_back(numbers);
+	}
+	SavedNumbers get_x_numbers()
+	{
+		for (int i = 0; i < x_numbers.size(); ++i)
+			return x_numbers[i];
+	}
+	double get_x_numbers_alpha()
+	{
+		return x_numbers[x_numbers.size() - 1].get_n();
+	}
+	double get_x_numbers_SN(int i)
+	{
+		return x_numbers[i].get_SN();
+	}
+	double get_x_numbers_alphaN(int i)
+	{
+		return x_numbers[i].get_alphaN();
+	}
+	double get_x_numbers_an(int i)
+	{
+		return x_numbers[i].get_an();
+	}
+};
+
+
+bool check_string(const string& check, const int& flag)
+{
+	if (check.empty()) // для отслеживания пустой строки
 		return false;
 	bool dot_found = false;
-	for (int i = 0; i < input_string.length(); i++)
+	for (int i = 0; i < check.length(); i++)
 	{
-		char symbol = input_string[i];
+		char symbol = check[i];
 		if (i != 0 && symbol == '-') // минус должен быть только в начале числа
 			return false;
 		if (symbol == '.')
@@ -22,7 +99,9 @@ bool check_string(string input_string) // функция для проверки
 				return false;
 			else dot_found = true;
 		}
-		if (isdigit(symbol) == 0 && symbol != '.' && symbol != '-') // для отслеживания букв
+		if (!isdigit(symbol) && symbol != '.' && symbol != '-') // для отслеживания букв
+			return false;
+		if (flag && symbol == '-')
 			return false;
 		if (isspace(symbol) != 0) // для отслеживания пробелов в строке
 			return false;
@@ -30,385 +109,186 @@ bool check_string(string input_string) // функция для проверки
 	return true;
 }
 
-int factorial(int i) // функция для расчёта факториала числа
+long factorial(const int& n)
 {
-	if (i == 0) return 1;
-	else return i * factorial(i - 1);
+	if (n == 0) return 1;
+	else return n * factorial(n - 1);
 }
 
-double number_a(int n, double x) // функция для расчёта n-ого члена ряда
+double a_n(const int& n, const double& x)
 {
-	double a = pow(-1, n + 1) * (n - 1) * pow(x, n) / factorial(n);
-	return a;
+	return (pow(-1, n + 1) * (n - 1) * pow(x, n)) / factorial(n);
 }
 
-double number_SN(double prev_SN, int n, double x) // функция для расчёта частичной суммы
+double alphaN(const int& n, const double& x, const double& SN)
 {
-	double current_a = number_a(n, x);
-	double SN = current_a + prev_SN;
-	return SN;
+	return fabs(a_n(n + 1, x) / (SN));
 }
 
-double number_alphaN(int n, double x, double SN) // функция для расчёта погрешности
+void print(const double& i, const double& an, const double& SN, const double& alphaN) // функция для вывода всех значений в таблицу
 {
-	double next_a = number_a(n + 1, x);
-	double alphaN = fabs(next_a / (SN + 1));
-	return alphaN;
-}
-
-void output(int n, double a, double SN, double alphaN) // функция для вывода всех значений в таблицу
-{
-	cout << "n = " << setw(4) << n << " | ";
-	cout << "a = " << setw(13) << a << " | ";
-	cout << "SN = " << setw(15) << SN + 1 << " | ";
+	cout << "n = " << setw(4) << i << " | ";
+	cout << "a = " << setw(13) << an << " | ";
+	cout << "SN = " << setw(15) << SN << " | ";
 	cout << "alphaN = " << setw(15) << alphaN;
 	cout << endl;
 }
 
-void output_again(int n, int j, vector<double> saved_numbers)
+void print_again(double& alpha, int& j, vector<SavedX>& saved_X, double& x)
 {
-	cout << "n = " << setw(4) << n << " | ";
-	cout << "a = " << setw(13) << saved_numbers[j] << " | ";
-	++j;
-	cout << "SN = " << setw(15) << saved_numbers[j] + 1 << " | ";
-	++j;
-	cout << "alphaN = " << setw(15) << saved_numbers[j];
-	cout << endl;
-}
-
-void repeat_output(int y, double prev_alpha, double alpha, vector <vector<double>> saved_numbers)
-{
-	int j;
-	int n;
-	cout << "You've already inserted this 'x', so the programm will output saved numbers" << endl;
-	if (alpha != int(alpha) && alpha < y)
+	for (int i = 2; i <= saved_X[j].get_x_numbers_alpha(); ++i)
 	{
-		if (prev_alpha == alpha)
-		{
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				n = i + 1;
-				j = 0;
-				output_again(n, j, saved_numbers[i]);
-			}
-		}
-		if (prev_alpha > alpha)
-		{
-			int ch = 0;
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				if (alpha <= saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-				}
-				if (alpha > saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-					ch = 1;
-				}
-			}
-		}
-		if (prev_alpha < alpha)
-		{
-			int ch = 0;
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				if (alpha <= saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-				}
-				if (alpha > saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-					ch = 1;
-				}
-			}
-		}
-
+		cout << "f ";
+		print(i, saved_X[j].get_x_numbers_an(i - 2), saved_X[j].get_x_numbers_SN(i - 2), saved_X[j].get_x_numbers_alphaN(i - 2));
 	}
-	if (alpha != int(alpha) && alpha > y)
+	double prev_SN = saved_X[j].get_x_numbers_SN(saved_X[j].get_x_numbers_alpha() - 2);
+	double SN = 0;
+	double an = 0;
+	double alpha_N = 0;
+	for (int i = saved_X[j].get_x_numbers_alpha() + 1; i <= alpha + 2; ++i)
 	{
-		if (prev_alpha == alpha)
-		{
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				n = i + 1;
-				j = 0;
-				output_again(n, j, saved_numbers[i]);
-			}
-		}
-		if (prev_alpha > alpha)
-		{
-			int ch = 0;
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				if (alpha > saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-				}
-				if (alpha <= saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-					ch = 1;
-				}
-			}
-		}
-		if (prev_alpha < alpha)
-		{
-			int ch = 0;
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				if (alpha > saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-				}
-				if (alpha <= saved_numbers[i][2] && ch != 1)
-				{
-					n = i + 1;
-					j = 0;
-					output_again(n, j, saved_numbers[i]);
-					ch = 1;
-				}
-			}
-		}
-	}
-	if (alpha == int(alpha))
-	{
-		if (prev_alpha == alpha)
-		{
-			for (int i = 0; i < saved_numbers.size(); ++i)
-			{
-				n = i + 1;
-				j = 0;
-				output_again(n, j, saved_numbers[i]);
-			}
-		}
-		if (prev_alpha > alpha)
-		{
-			for (int i = 0; i < alpha; ++i)
-			{
-				n = i + 1;
-				j = 0;
-				output_again(n, j, saved_numbers[i]);
-			}
-		}
-		if (prev_alpha < alpha)
-		{
-			for (int i = 0; i < alpha; ++i)
-			{
-				n = i + 1;
-				j = 0;
-				output_again(n, j, saved_numbers[i]);
-			}
-		}
-	}
-
-}
-
-void calc(double alpha, int y, int n, double x, double prev_SN, vector <vector<double>>& saved_numbers)
-{
-	double a;
-	double SN;
-	double alphaN;
-	if (alpha != int(alpha) && alpha < y) // случай, когда погрешность меньше 1
-	{
-		do
-		{
-			a = number_a(n, x);
-			SN = number_SN(prev_SN, n, x);
-			prev_SN = SN;
-			alphaN = number_alphaN(n, x, SN);
-			output(n, a, SN, alphaN);
-			saved_numbers.push_back({ a, SN, alphaN });
-			++n;
-		} while (alphaN > alpha);
-	}
-	if (alpha != int(alpha) && alpha > y) // случай, когда погрешность больше 1
-	{
-		do
-		{
-			a = number_a(n, x);
-			SN = number_SN(prev_SN, n, x);
-			prev_SN = SN;
-			alphaN = number_alphaN(n, x, SN);
-			output(n, a, SN, alphaN);
-			saved_numbers.push_back({ a, SN, alphaN });
-			++n;
-		} while (alphaN < alpha);
-	}
-	if (alpha == int(alpha)) // случай, когда происходит выполнение программы определённое количество раз ( n раз )
-	{
-		while (n <= alpha)
-		{
-			a = number_a(n, x);
-			SN = number_SN(prev_SN, n, x);
-			prev_SN = SN;
-			alphaN = number_alphaN(n, x, SN);
-			output(n, a, SN, alphaN);
-			saved_numbers.push_back({ a, SN, alphaN });
-			++n;
-		}
+		an = a_n(i, x);
+		SN = prev_SN + an;
+		prev_SN = SN;
+		alpha_N = alphaN(i, x, SN);
+		print(i, an, SN, alpha_N);
+		SavedNumbers numbers(i, an, SN, alpha_N);
+		saved_X[j].set_x_numbers(numbers);
 	}
 }
 
-void repeat_calc(double alpha, int y, int n, double x, double prev_SN, double prev_alpha, vector <vector<double>>& saved_numbers)
+void if_P_print_again(double& alpha, int& j, int& i, vector<SavedX>& saved_X, double& x)
 {
-	double a;
-	double SN;
-	double alphaN;
-	if (alpha != int(alpha) && alpha < y) // случай, когда погрешность меньше 1
+	double prev_SN = saved_X[j].get_x_numbers_SN(saved_X[j].get_x_numbers_alpha() - 2);
+	double SN = 0;
+	double an = 0;
+	double alpha_N = saved_X[j].get_x_numbers_alphaN(i - 2);
+	++i;
+	while (alpha < alpha_N)
 	{
-		if (prev_alpha == alpha) repeat_output(y, prev_alpha, alpha, saved_numbers);
-		if (prev_alpha > alpha)
-		{
-			if (saved_numbers[saved_numbers.size()-1][2] > alpha)
-			{
-				n = saved_numbers.size() + 1;
-				prev_SN = saved_numbers[saved_numbers.size() - 1][1];
-				do
-				{
-					a = number_a(n, x);
-					SN = number_SN(prev_SN, n, x);
-					prev_SN = SN;
-					alphaN = number_alphaN(n, x, SN);
-					output(n, a, SN, alphaN); //для отладки
-					saved_numbers.push_back({ a, SN, alphaN });
-					++n;
-				} while (alphaN > alpha);
-			}
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
-		if (prev_alpha < alpha)
-		{
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
+		an = a_n(i, x);
+		SN = prev_SN + an;
+		prev_SN = SN;
+		alpha_N = alphaN(i, x, SN);
+		print(i, an, SN, alpha_N);
+		SavedNumbers numbers(i, an, SN, alpha_N);
+		saved_X[j].set_x_numbers(numbers);
+		++i;
 	}
-	if (alpha != int(alpha) && alpha > y) // случай, когда погрешность больше 1
-	{
-		if (prev_alpha == alpha)
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		if (prev_alpha > alpha)
-		{
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
-		if (prev_alpha < alpha)
-		{
+}
 
-			if (saved_numbers[saved_numbers.size()-1][2] < alpha)
-			{
-				n = saved_numbers.size() + 1;
-				prev_SN = saved_numbers[saved_numbers.size() - 1][1];
-				do
-				{
-					a = number_a(n, x);
-					SN = number_SN(prev_SN, n, x);
-					prev_SN = SN;
-					alphaN = number_alphaN(n, x, SN);
-					output(n, a, SN, alphaN); //для отладки
-					saved_numbers.push_back({ a, SN, alphaN });
-					++n;
-				} while (alphaN < alpha);
-			}
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
-	}
-	if (alpha == int(alpha)) // случай, когда происходит выполнение программы определённое количество раз ( n раз )
+void if_alpha_N(const double& alpha, const double& x, vector<SavedX>& saved_X)
+{
+	double prev_SN = 1;
+	double SN = 0;
+	double an = 0;
+	double alpha_N = 0;
+	SavedX s_x(x);
+	for (int i = 2; i <= alpha + 2; ++i)
 	{
-		if (prev_alpha == alpha) repeat_output(y, prev_alpha, alpha, saved_numbers);
-		if (prev_alpha > alpha)
-		{
-			n = alpha;
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
-		if (prev_alpha < alpha)
-		{
-			n = prev_alpha + 1;
-			prev_SN = saved_numbers[prev_alpha - 1][1];
-			while (n <= alpha)
-			{
-				if (n > saved_numbers.size())
-				{
-					a = number_a(n, x);
-					SN = number_SN(prev_SN, n, x);
-					prev_SN = SN;
-					alphaN = number_alphaN(n, x, SN);
-					//cout << "This numbers will be calculated" << endl;
-					output(n, a, SN, alphaN);
-					saved_numbers.push_back({ a, SN, alphaN });
-				}
-				++n;
-			}
-			repeat_output(y, prev_alpha, alpha, saved_numbers);
-		}
+		an = a_n(i, x);
+		SN = prev_SN + an;
+		prev_SN = SN;
+		alpha_N = alphaN(i, x, SN);
+		print(i, an, SN, alpha_N);
+		SavedNumbers numbers(i, an, SN, alpha_N);
+		s_x.set_x_numbers(numbers);
 	}
+	saved_X.push_back(s_x);
+}
+
+void if_alpha_P(const double& alpha, const double& x, vector<SavedX>& saved_X)
+{
+	double prev_SN = 1;
+	double SN = 0;
+	double an = 0;
+	double alpha_N = 0;
+	SavedX s_x(x);
+	int i = 2;
+	do
+	{
+		an = a_n(i, x);
+		SN = prev_SN + an;
+		prev_SN = SN;
+		alpha_N = alphaN(i, x, SN);
+		print(i, an, SN, alpha_N);
+		SavedNumbers numbers(i, an, SN, alpha_N);
+		s_x.set_x_numbers(numbers);
+		++i;
+	} while (alpha < alpha_N);
+	saved_X.push_back(s_x);
 }
 
 int main()
 {
-	string answer;
-	double prev_SN = 0; // объявление переменных, + присваивание предыдущей сумме нулевое значение, чтобы при первой прокрутке программы правильно посчиталась первая частичная сумма
-	double prev_x = 0;
-	double prev_alpha = 0;
-	int prev_n = 0;
-	int n = 1;
-	vector<vector<double>> saved_numbers;
-	do // зацикливание программы
+	int flag; // флаг для проверки ввода
+	string input_x, input_a, answ;
+	int zapuski;
+	vector <SavedX> saved_x;
+	do
 	{
-		n = 1;
-		string input_x;
-		string input_a;
+		zapuski = 0;
 		bool correct_input = false;
-		while (correct_input == false) // ввод Х
+		while (!correct_input) // ввод Х
 		{
+			flag = 0; // флаг для проверки ввода
 			cout << "Enter x\n";
 			getline(cin, input_x);
-			if (check_string(input_x) == false)
+			if (!check_string(input_x, flag))
 			{
 				cout << "Enter correct x ( number )\n";
-				input_x.clear();
 			}
 			else correct_input = true;
 		}
 		correct_input = false;
-		while (correct_input == false) // ввод погрешности / n, в зависимости от полученных значений
+		while (!correct_input) // ввод погрешности / n, в зависимости от полученных значений
 		{
+			flag = 1; // флаг для проверки ввода
 			cout << "Enter a\n";
 			getline(cin, input_a);
-			if (check_string(input_a) == false)
+			if (!check_string(input_a, flag))
 			{
 				cout << "Enter correct a ( number )\n";
-				input_a.clear();
 			}
 			else correct_input = true;
-
 		}
-		double x = stod(input_x); // перевод строки в число с плавающей точкой
+		double x = stod(input_x);
 		double alpha = stod(input_a);
-		int y = 1;
-		if (prev_x != x)
+		for (int i = 0; i < saved_x.size(); ++i)
 		{
-			saved_numbers.clear();
-			calc(alpha, y, n, x, prev_SN, saved_numbers);
+			if (x == saved_x[i].get_x())
+			{
+				int j = i;
+				if ((alpha == (int)alpha) && (alpha <= saved_x[i].get_x_numbers_alpha() - 2))
+				{
+					for (int i = 2; i <= alpha + 2; ++i)
+					{
+						cout << "f ";
+						print(i, saved_x[j].get_x_numbers_an(i - 2), saved_x[j].get_x_numbers_SN(i - 2), saved_x[j].get_x_numbers_alphaN(i - 2));
+					}
+				}
+				if ((alpha == (int)alpha) && (alpha > saved_x[i].get_x_numbers_alpha() - 2))
+				{
+					print_again(alpha, j, saved_x, x);
+				}
+				if (alpha != (int)alpha)
+				{
+					int i = 2;
+					while ((i < saved_x[j].get_x_numbers_alpha()) && (alpha <= saved_x[j].get_x_numbers_alphaN(i-2)))
+					{
+						cout << "f ";
+						print(i, saved_x[j].get_x_numbers_an(i - 2), saved_x[j].get_x_numbers_SN(i - 2), saved_x[j].get_x_numbers_alphaN(i - 2));
+						++i;
+					}
+					cout << "f ";
+					print(i, saved_x[j].get_x_numbers_an(i - 2), saved_x[j].get_x_numbers_SN(i - 2), saved_x[j].get_x_numbers_alphaN(i - 2));
+					if_P_print_again(alpha, j, i, saved_x, x);
+				}
+				zapuski = 1;
+			}
 		}
-		if (prev_x == x) repeat_calc(alpha, y, n, x, prev_SN, prev_alpha, saved_numbers);
-		cin >> answer;
-		cin.ignore();
-		prev_SN = 0;
-		prev_x = x;
-		prev_alpha = alpha;
-	} while (answer == "y");
+		if (!zapuski)
+			alpha == (int)alpha ? if_alpha_N(alpha, x, saved_x) : if_alpha_P(alpha, x, saved_x);
+		getline(cin, answ);
+	} while (answ != "n");
 }
