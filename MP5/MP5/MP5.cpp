@@ -13,12 +13,10 @@ using namespace std;
 class WorkTime
 {
 private:
-	int day, month;
-	int start_hour, start_minutes;
-	int end_hour, end_minutes;
-	int work_hours, work_minutes;
+	string date, start_time, end_time;
 	bool check_string(string check, const int& flag, string prev_string)
 	{
+		int day, month, start_hour, end_hour, start_minutes, end_minutes;
 		if (check.size() != 5)
 			return false;
 		for (int i = 0; i < check.size(); ++i)
@@ -70,38 +68,37 @@ private:
 		}
 		return true;
 	}
-	string convert_to_string(const int& first_int, const int& flag, const int& second_int) const
-	{
-		string str;
-		if (first_int < 10)
-			str = "0" + to_string(first_int);
-		else
-			str = to_string(first_int);
-		if (flag == 1)
-			str.push_back('.');
-		else
-			str.push_back(':');
-		if (second_int < 10)
-			str.push_back('0');
-		str += to_string(second_int);
-		return str;
-	}
-public:
 
+
+public:
 	WorkTime()
 	{
-		day = 5;
-		month = 5;
-		start_hour = 5;
-		start_minutes = 5;
-		end_hour = 6;
-		end_minutes = 6;
-		work_hours = 1;
-		work_minutes = 1;
+		date = " 01:01";
+		start_time = "12:12";
+		end_time = "14:14";
 	}
 
-	void time()
+	WorkTime(string dt, string st_t, string en_t)
 	{
+		this->date = dt;
+		this->start_time = st_t;
+		this->end_time = en_t;
+	}
+
+	WorkTime(const WorkTime& ref_WorkTime)
+	{
+		this->date = ref_WorkTime.date;
+		this->start_time = ref_WorkTime.start_time;
+		this->end_time = ref_WorkTime.end_time;
+	}
+
+	int get_time()
+	{
+		int start_hour = stoi(start_time);
+		int start_minutes = stoi(start_time.substr(3, 5));
+		int end_hour = stoi(end_time);
+		int end_minutes = stoi(end_time.substr(3, 5));
+		int work_hours, work_minutes;
 		if (end_minutes < start_minutes)
 		{
 			work_hours = end_hour - start_hour - 1;
@@ -112,137 +109,62 @@ public:
 			work_hours = end_hour - start_hour;
 			work_minutes = end_minutes - start_minutes;
 		}
+		return work_hours * 60 + work_minutes;
 	}
 
-	/*int int_time()
+	string convert_work_time()
 	{
-		int buff;
-		int min_buff;
-		if (end_minutes < start_minutes)
-		{
-			buff = end_hour - start_hour - 1;
-			min_buff = 60 - start_minutes + end_minutes;
-		}
+		string w_t;
+		int min = get_time();
+		if (min / 60 < 10)
+			w_t = "0" + to_string(min / 60);
 		else
-		{
-			buff = end_hour - start_hour;
-			min_buff = end_minutes - start_minutes;
-		}
-		return buff, min_buff;
-	}*/
-
-	WorkTime(const WorkTime& ref_WorkTime)
-	{
-		this->day = ref_WorkTime.day;
-		this->month = ref_WorkTime.month;
-		this->start_hour = ref_WorkTime.start_hour;
-		this->start_minutes = ref_WorkTime.start_minutes;
-		this->end_hour = ref_WorkTime.end_hour;
-		this->end_minutes = ref_WorkTime.end_minutes;
-		this->work_hours = ref_WorkTime.work_hours;
-		this->work_minutes = ref_WorkTime.work_minutes;
+			w_t = to_string(min / 60);
+		w_t.push_back(':');
+		if ((min - (min / 60) * 60) < 10)
+			w_t.push_back('0');
+		w_t += to_string((min - (min / 60) * 60));
+		return w_t;
 	}
-
-	friend ostream& operator<<(ostream& out, const WorkTime& ref);
+	friend ostream& operator<<(ostream& out, WorkTime& ref);
 	friend istream& operator>>(istream& in, WorkTime& ref);
-	friend ofstream& operator<<(ofstream& out, const WorkTime& ref);
+	friend ofstream& operator<<(ofstream& out, WorkTime& ref);
 	friend ifstream& operator>>(ifstream& in, WorkTime& ref);
 
-	bool operator > (const WorkTime& ref)
+	bool operator > (WorkTime& ref)
 	{
-		int dif = work_hours - ref.work_hours;
-		if (dif > 0)
-			return true;
-		if (dif == 0)
-		{
-			int min_dif = work_minutes - ref.work_minutes;
-			if (min_dif > 0)
-				return true;
-		}
-		else
+		int dif = get_time() - ref.get_time();
+		if (dif < 0)
 			return false;
+		return true;
 	}
 
 	bool operator < (WorkTime& ref)
 	{
-		int dif;
-		int min_dif;
-		//int min_dif = int_time() - ref.int_time();
-
-
-		/*if ((end_minutes < start_minutes) && (ref.end_minutes > ref.start_minutes))
-		{
-			dif = (end_hour - start_hour - 1) - (ref.end_hour - ref.start_hour);
-			if (dif > 0)
-				return false;
-			if (dif == 0)
-			{
-				min_dif = (60 - start_minutes + end_minutes) - (ref.end_minutes - ref.start_minutes);
-				if (min_dif > 0)
-					return false;
-			}
-		}
-		if ((end_minutes > start_minutes) && (ref.end_minutes < ref.start_minutes))
-		{
-			dif = (end_hour - start_hour) - (ref.end_hour - ref.start_hour - 1);
-			if (dif > 0)
-				return false;
-			if (dif == 0)
-			{
-				min_dif = (end_minutes - start_minutes) - (60 - ref.start_minutes + ref.end_minutes);
-				if (min_dif > 0)
-					return false;
-			}
-		}
-		if ((end_minutes < start_minutes) && (ref.end_minutes < ref.start_minutes))
-		{
-			dif = (end_hour - start_hour - 1) - (ref.end_hour - ref.start_hour - 1);
-			if (dif > 0)
-				return false;
-			if (dif == 0)
-			{
-				min_dif = (60 - start_minutes + end_minutes) - (60 - ref.end_minutes + ref.start_minutes);
-				if (min_dif > 0)
-					return false;
-			}
-		}
-		if((end_minutes > start_minutes) && (ref.end_minutes > ref.start_minutes))
-		{
-			dif = (end_hour - start_hour) - (ref.end_hour - ref.start_hour);
-			if (dif > 0)
-				return false;
-			if (dif == 0)
-			{
-				min_dif = (end_minutes - start_minutes) - (ref.end_minutes - ref.start_minutes);
-				if (min_dif > 0)
-					return false;
-			}
-		}
-		else
-			return true;*/
+		int dif = get_time() - ref.get_time();
+		if (dif > 0)
+			return false;
+		return true;
 	}
 };
 
-ostream& operator<<(ostream& out, const WorkTime& ref)
+ostream& operator<<(ostream& out, WorkTime& ref)
 {
-	out << " | date: " << ref.convert_to_string(ref.day, 1, ref.month) << " | start time " << ref.convert_to_string(ref.start_hour, 2, ref.start_minutes) << " | end time "
-		<< ref.convert_to_string(ref.end_hour, 2, ref.end_minutes) << " | work time " << ref.convert_to_string(ref.work_hours, 2, ref.work_minutes) << "\n";
+	out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time "
+		<< ref.end_time << " | work time " << ref.convert_work_time() << " ";
 	return out;
 }
 
 istream& operator>>(istream& in, WorkTime& ref)
 {
 	int flag;
-	string date;
-	string start_time;
-	string end_time;
 	bool check_input = false;
 	while (!check_input)
 	{
 		cout << "Enter date in format day.mnth: ";
-		getline(in, date);
+		getline(in, ref.date);
 		flag = 1;
-		if (!ref.check_string(date, flag, start_time))
+		if (!ref.check_string(ref.date, flag, ref.start_time))
 		{
 			cout << "Error! Repeat enter" << endl;
 		}
@@ -253,9 +175,9 @@ istream& operator>>(istream& in, WorkTime& ref)
 	while (!check_input)
 	{
 		cout << "Enter start time in format hr:mnts: ";
-		getline(in, start_time);
+		getline(in, ref.start_time);
 		flag = 2;
-		if (!ref.check_string(start_time, flag, start_time))
+		if (!ref.check_string(ref.start_time, flag, ref.start_time))
 		{
 			cout << "Error! Repeat enter" << endl;
 		}
@@ -266,9 +188,9 @@ istream& operator>>(istream& in, WorkTime& ref)
 	while (!check_input)
 	{
 		cout << "Enter end time in format hr:mnts: ";
-		getline(in, end_time);
+		getline(in, ref.end_time);
 		flag = 3;
-		if (!ref.check_string(end_time, flag, start_time))
+		if (!ref.check_string(ref.end_time, flag, ref.start_time))
 		{
 			cout << "Error! Repeat enter" << endl;
 		}
@@ -278,25 +200,22 @@ istream& operator>>(istream& in, WorkTime& ref)
 	return in;
 }
 
-ofstream& operator<<(ofstream& out, const WorkTime& ref)
+ofstream& operator<<(ofstream& out, WorkTime& ref)
 {
-	out << " " << ref.convert_to_string(ref.day, 1, ref.month) << " " << ref.convert_to_string(ref.start_hour, 2, ref.start_minutes) << " "
-		<< ref.convert_to_string(ref.end_hour, 2, ref.end_minutes) << " " << ref.convert_to_string(ref.work_hours, 2, ref.work_minutes) << "\n";
+	out << " " << ref.date << " " << ref.start_time << " "
+		<< ref.end_time << " " << ref.convert_work_time() << " ";
 	return out;
 }
 
 ifstream& operator>>(ifstream& in, WorkTime& ref)
 {
 	int flag;
-	string date;
-	string start_time;
-	string end_time;
 	bool check_input = false;
 	while (!check_input)
 	{
-		in >> date;
+		in >> ref.date;
 		flag = 1;
-		if (!ref.check_string(date, flag, start_time))
+		if (!ref.check_string(ref.date, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect date");
 		}
@@ -306,9 +225,9 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 	check_input = false;
 	while (!check_input)
 	{
-		in >> start_time;
+		in >> ref.start_time;
 		flag = 2;
-		if (!ref.check_string(start_time, flag, start_time))
+		if (!ref.check_string(ref.start_time, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect start time");
 		}
@@ -318,9 +237,9 @@ ifstream& operator>>(ifstream& in, WorkTime& ref)
 	check_input = false;
 	while (!check_input)
 	{
-		in >> end_time;
+		in >> ref.end_time;
 		flag = 3;
-		if (!ref.check_string(end_time, flag, start_time))
+		if (!ref.check_string(ref.end_time, flag, ref.start_time))
 		{
 			throw runtime_error("Incorrect end time");
 		}
@@ -334,36 +253,73 @@ class Worker
 {
 private:
 	string name;
+	string price;
 	WorkTime time;
+	bool check_name(string& name)
+	{
+		if (name.empty())
+			return false;
+		for (int i = 0; i < name.size(); ++i)
+		{
+			if (!isalpha(name[i]) || isspace(name[i]))
+				return false;
+		}
+		return true;
+	}
+
+	bool check_money(string& price)
+	{
+		if (price.empty())
+			return false;
+		for (int i = 0; i < price.size(); ++i)
+		{
+			if (!isdigit(price[i]) || isspace(price[i]))
+				return false;
+		}
+		return true;
+	}
 public:
 	Worker()
 	{
 		name = "Noname";
+		price = "100";
 	}
-	Worker(string name, WorkTime time)
+	Worker(string name, string price, WorkTime time)
 	{
 		this->name = name;
+		this->price = price;
 		this->time = time;
 	}
 	Worker(const Worker& ref_Worker)
 	{
 		this->name = ref_Worker.name;
+		this->price = ref_Worker.price;
 		this->time = ref_Worker.time;
 	}
 	string get_name()
 	{
 		return name;
 	}
-	friend ostream& operator<<(ostream& out, const Worker& ref);
-	friend ofstream& operator<<(ofstream& out, const Worker& ref);
-	bool operator > (const Worker& ref)
+	int day_money()
+	{
+		return time.get_time() * stoi(price) / 60;
+	}
+	string to_string_money()
+	{
+		return to_string(day_money());
+	}
+	friend ostream& operator<<(ostream& out, Worker& ref);
+	friend istream& operator>>(istream& in, Worker& ref);
+	friend ofstream& operator<<(ofstream& out, Worker& ref);
+	friend ifstream& operator>>(ifstream& in, Worker& ref);
+	bool operator > (Worker& ref)
 	{
 		if (time > ref.time)
 			return true;
 		else
 			return false;
 	}
-	bool operator < (const Worker& ref)
+	bool operator < (Worker& ref)
 	{
 		if (time > ref.time)
 			return false;
@@ -372,20 +328,81 @@ public:
 	}
 };
 
-ostream& operator<<(ostream& out, const Worker& ref)
+ostream& operator<<(ostream& out, Worker& ref)
 {
-	out << "name: " << setw(10) << ref.name;
+	out << "name: " << setw(7) << ref.name << ' ';
+	//out << "money: " << setw(5) << ref.to_string_money();
 	out << ref.time;
 	return out;
 }
 
-ofstream& operator<<(ofstream& out, const Worker& ref)
+istream& operator>>(istream& in, Worker& ref)
 {
-	out << setw(7) << ref.name;
+	bool check_input = false;
+	while (!check_input)
+	{
+		//cout << "Enter date in format day.mnth: ";
+		getline(in, ref.name);
+		if (!ref.check_name(ref.name))
+		{
+			cout << "Error! Repeat name enter" << endl;
+		}
+		else
+			check_input = true;
+	}
+	in >> ref.time;
+	check_input = false;
+	while (!check_input)
+	{
+		cout << "Enter money: ";
+		getline(in, ref.price);
+		if (!ref.check_money(ref.price))
+		{
+			cout << "Error! Repeat money enter" << endl;
+		}
+		else
+			check_input = true;
+	}
+	//in >> ref.time;
+	return in;
+}
+
+ofstream& operator<<(ofstream& out, Worker& ref)
+{
+	out << setw(7) << ref.name << ' ';
+	//out << setw(5) << ref.to_string_money();
 	out << ref.time;
 	return out;
 }
 
+ifstream& operator>>(ifstream& in, Worker& ref)
+{
+	bool check_input = false;
+	while (!check_input)
+	{
+		in >> ref.name;
+		if (!ref.check_name(ref.name))
+		{
+			throw runtime_error("Incorrect name");
+		}
+		else
+			check_input = true;
+	}
+	in >> ref.time;
+	check_input = false;
+	while (!check_input)
+	{
+		in >> ref.price;
+		if (!ref.check_money(ref.price))
+		{
+			throw runtime_error("Incorrect money");
+		}
+		else
+			check_input = true;
+	}
+	//in >> ref.time;
+	return in;
+}
 
 
 bool check_amount(string amount)
@@ -410,18 +427,6 @@ bool check_int(string input)
 	return true;
 }
 
-bool check_name(string name)
-{
-	if (name.empty())
-		return false;
-	for (int i = 0; i < name.size(); ++i)
-	{
-		if (!isalpha(name[i]) || isspace(name[i]))
-			return false;
-	}
-	return true;
-}
-
 
 int main()
 {
@@ -431,7 +436,6 @@ int main()
 	int n_flag = 0;
 	int prev_size = 0;
 	bool correct_int;
-	string name;
 	string amount;
 	vector <Worker> workers;
 	int correct_flag;
@@ -439,6 +443,7 @@ int main()
 	{
 		correct_flag = 0;
 		WorkTime work_time;
+		Worker guy;
 		correct_int = false;
 		while (!correct_int)
 		{
@@ -469,23 +474,8 @@ int main()
 			workers.resize(am);
 			for (int i = prev_size; i < workers.size(); ++i)
 			{
-				correct_int = false;
-				while (!correct_int)
-				{
-					cout << "Please enter " << i + 1 << " worker name: ";
-					getline(cin, name);
-					if (!check_name(name))
-						cout << "Error! Please enter correct name" << endl;
-					else
-					{
-						correct_int = true;
-					}
-				}
-				correct_int = false;
-				cin >> work_time;
-				work_time.time();
-				cout << "name: " << name << work_time << endl;
-				Worker guy(name, work_time);
+				cout << "Please enter " << i + 1 << " worker name: ";
+				cin >> guy;
 				workers[i] = guy;
 			}
 		}
@@ -508,16 +498,13 @@ int main()
 						{
 							string buf;
 							getline(fin, buf);
+							int flag = 0;
 							if (fin.peek() == EOF)
-								break;
-							buf.clear();
+								flag = 1;
+							else
+								buf.clear();
 						}
-						fin >> name;
-						if (!check_name(name))
-							throw runtime_error("Incorrect worker name");
-						fin >> work_time;
-						work_time.time();
-						Worker guy(name, work_time);
+						fin >> guy;
 						workers.push_back(guy);
 						correct_flag = 1;
 						++str;
@@ -548,9 +535,9 @@ int main()
 			cout << "all workers: \n";
 			for (int i = 0; i < workers.size(); ++i)
 			{
-				//cout << "name: " << setw(7) << workers[i].get_name() << " | start time: " << workers[i].get_st_time() << " | end time: " << workers[i].get_end_time() << " | work time: " << workers[i].get_time() << endl;
-				//cout << workers[i].get_name();
 				cout << workers[i];
+				cout << work_time.convert_work_time() << " ";
+				cout << "| money: " << setw(2) << workers[i].to_string_money() << "\n";
 				if (i)
 				{
 					if (workers[i] > workers[i - 1])
@@ -570,9 +557,8 @@ int main()
 			}
 			for (int i = 0; i < workers.size(); ++i)
 			{
-				//fout << workers[i].get_name() << workers[i].get_st_time() << workers[i].get_end_time() << workers[i].get_time() << endl;
-				//fout << workers[i].get_name();
 				fout << workers[i];
+				fout << setw(2) << workers[i].to_string_money() << "\n";
 			}
 			fout.close();
 		}
