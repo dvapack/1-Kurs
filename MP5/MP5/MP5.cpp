@@ -151,7 +151,7 @@ public:
 ostream& operator<<(ostream& out, WorkTime& ref)
 {
 	out << " | date: " << ref.date << " | start time " << ref.start_time << " | end time "
-		<< ref.end_time << " | work time " << ref.convert_work_time() << " ";
+		<< ref.end_time;
 	return out;
 }
 
@@ -203,7 +203,7 @@ istream& operator>>(istream& in, WorkTime& ref)
 ofstream& operator<<(ofstream& out, WorkTime& ref)
 {
 	out << " " << ref.date << " " << ref.start_time << " "
-		<< ref.end_time << " " << ref.convert_work_time() << " ";
+		<< ref.end_time << " ";
 	return out;
 }
 
@@ -308,6 +308,10 @@ public:
 	{
 		return to_string(day_money());
 	}
+	string get_work_time()
+	{
+		return time.convert_work_time();
+	}
 	friend ostream& operator<<(ostream& out, Worker& ref);
 	friend istream& operator>>(istream& in, Worker& ref);
 	friend ofstream& operator<<(ofstream& out, Worker& ref);
@@ -331,7 +335,6 @@ public:
 ostream& operator<<(ostream& out, Worker& ref)
 {
 	out << "name: " << setw(7) << ref.name << ' ';
-	//out << "money: " << setw(5) << ref.to_string_money();
 	out << ref.time;
 	return out;
 }
@@ -370,7 +373,6 @@ istream& operator>>(istream& in, Worker& ref)
 ofstream& operator<<(ofstream& out, Worker& ref)
 {
 	out << setw(7) << ref.name << ' ';
-	//out << setw(5) << ref.to_string_money();
 	out << ref.time;
 	return out;
 }
@@ -482,7 +484,7 @@ int main()
 		else
 		{
 			workers.clear();
-			ifstream fin("test1.txt");
+			ifstream fin("output.txt");
 			if (!fin.is_open()) // небольшая проверка на наличие файла
 			{
 				throw runtime_error("This file cant be opened");
@@ -509,7 +511,7 @@ int main()
 						correct_flag = 1;
 						++str;
 					}
-					catch (runtime_error & e)
+					catch (runtime_error& e)
 					{
 						cout << e.what() << " in " << str << " string " << endl;
 						correct_flag = 1;
@@ -536,8 +538,8 @@ int main()
 			for (int i = 0; i < workers.size(); ++i)
 			{
 				cout << workers[i];
-				cout << work_time.convert_work_time() << " ";
-				cout << "| money: " << setw(2) << workers[i].to_string_money() << "\n";
+				cout << " | money: " << setw(2) << workers[i].to_string_money() << " ";
+				cout << "| work time " << workers[i].get_work_time() << "\n";
 				if (i)
 				{
 					if (workers[i] > workers[i - 1])
@@ -558,7 +560,8 @@ int main()
 			for (int i = 0; i < workers.size(); ++i)
 			{
 				fout << workers[i];
-				fout << setw(2) << workers[i].to_string_money() << "\n";
+				fout << setw(2) << workers[i].to_string_money() << " ";
+				fout << workers[i].get_work_time() << "\n";
 			}
 			fout.close();
 		}
