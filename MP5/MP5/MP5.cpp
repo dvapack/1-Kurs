@@ -484,7 +484,7 @@ int main()
 		else
 		{
 			workers.clear();
-			ifstream fin("output.txt");
+			ifstream fin("test1.txt");
 			if (!fin.is_open()) // небольшая проверка на наличие файла
 			{
 				throw runtime_error("This file cant be opened");
@@ -496,26 +496,31 @@ int main()
 				{
 					try
 					{
-						if (correct_flag)
+						if (!str)
 						{
 							string buf;
 							getline(fin, buf);
-							int flag = 0;
 							if (fin.peek() == EOF)
-								flag = 1;
+								str = 0;
 							else
+							{
 								buf.clear();
+								++str;
+							}
 						}
-						fin >> guy;
-						workers.push_back(guy);
-						correct_flag = 1;
-						++str;
+						while(str)
+						{
+							fin >> guy;
+							workers.push_back(guy);
+							//correct_flag = 1;
+							--str;
+						}
 					}
-					catch (runtime_error& e)
+					catch (runtime_error & e)
 					{
 						cout << e.what() << " in " << str << " string " << endl;
-						correct_flag = 1;
-						++str;
+						//correct_flag = 1;
+						--str;
 					}
 				}
 				fin.close();
