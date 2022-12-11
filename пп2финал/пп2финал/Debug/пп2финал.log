@@ -1,0 +1,9 @@
+﻿  пп2финал.cpp
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(63,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(90,20): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(119,48): warning C4244: return: преобразование "double" в "float", возможна потеря данных
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(153,80): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(157,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(171,80): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\serg\source\repos\пп2финал\пп2финал\пп2финал.cpp(266,21): warning C4018: <: несоответствие типов со знаком и без знака
+  пп2финал.vcxproj -> C:\Users\serg\source\repos\пп2финал\Debug\пп2финал.exe
