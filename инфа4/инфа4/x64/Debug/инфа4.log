@@ -1,0 +1,3 @@
+﻿  инфа4.cpp
+C:\Users\mserg\source\repos\инфа4\инфа4\инфа4.cpp(52,30): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
+  инфа4.vcxproj -> C:\Users\mserg\source\repos\инфа4\x64\Debug\инфа4.exe
