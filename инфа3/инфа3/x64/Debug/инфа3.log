@@ -1,0 +1,3 @@
+﻿  инфа3.cpp
+C:\Users\mserg\source\repos\инфа3\инфа3\инфа3.cpp(45,2): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  инфа3.vcxproj -> C:\Users\mserg\source\repos\инфа3\x64\Debug\инфа3.exe
