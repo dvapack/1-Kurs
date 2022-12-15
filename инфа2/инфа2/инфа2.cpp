@@ -1,9 +1,11 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 
 using namespace std;
 
-bool check_input(const string& input, const char& flag)
+//вариант 20
+
+bool check_double(const string& input)
 {
 	bool dot_found = false;
 	if (input.empty())
@@ -15,83 +17,96 @@ bool check_input(const string& input, const char& flag)
 			return false;
 		if (symbol == '.')
 		{
-			(!flag && dot_found == true) ? false : dot_found = true;
-			if (flag) 
+			if (dot_found)
 				return false;
+			else
+				dot_found = true;
 		}
 		if (!isdigit(symbol) && symbol != '-' && symbol != '.' && isspace(symbol))
 			return false;
 	}
-	if ((flag && (stoll(input) > 2147483647) || (stoll(input) < 0)) || (!flag && (stold(input) > 1.7E+308) || (stod(input) < 0)))
+	if ((stold(input) > 1.7E+308) || (stod(input) < 0))
+		return false;
+	return true;
+}
+
+bool check_int(const string& input)
+{
+	bool dot_found = false;
+	if (input.empty())
+		return false;
+	for (int i = 0; i < input.length(); i++)
+	{
+		char symbol = input[i];
+		if ((i != 0 && symbol == '-') || (symbol == '.'))
+			return false;
+		if (!isdigit(symbol) && symbol != '-' && isspace(symbol))
+			return false;
+	}
+	if ((stoll(input) > 2147483647) || (stoll(input) < 0))
 		return false;
 	return true;
 }
 
 double percentage(double& deposit, const double& rate, int& months)
 {
-	/*while (months)
+	return deposit * pow(1 + rate, months);
+}
+
+void user_input(const char& flag, string& input)
+{
+	bool correct_input = false;
+	while (!correct_input)
 	{
-		deposit += deposit * rate;
-		--months;
-	}*/
-	deposit += deposit * rate;
-	return deposit;
+		if (!flag)
+			cout << "Input an initial deposit > ";
+		if (flag)
+			cout << "Input a monthly deposit rate >  ";
+		getline(cin, input);
+		if (!check_double(input))
+		{
+			cout << "Wrong input!\n";
+			correct_input = false;
+		}
+		else
+			correct_input = true;
+	}
+}
+
+void months_input(string& input)
+{
+	bool correct_input = false;
+	while (!correct_input)
+	{
+		cout << "Input the number of months > ";
+		getline(cin, input);
+		if (!check_int(input))
+		{
+			cout << "Wrong input!\n";
+			correct_input = false;
+		}
+		else
+			correct_input = true;
+	}
 }
 
 int main()
 {
-	string answ;
+	string answ = "y";
 	string input;
-	bool correct_input;
-	char flag;
-	do
+	bool flag;
+	cout << "Deposit percentage\n";
+	while (answ != "n")
 	{
-		correct_input = false;
-		flag = 0;
-		cout << "Deposit percentage\n";
-		while (!correct_input)
-		{
-			cout << "Input an initial deposit > ";
-			getline(cin, input);
-			if (!check_input(input, flag))
-			{
-				cout << "Wrong input!\n";
-				correct_input = false;
-			}
-			else
-				correct_input = true;
-		}
-		correct_input = false;
+		flag = false;
+		user_input(flag, input);
 		double deposit = stod(input);
-		while (!correct_input)
-		{
-			cout << "Input a monthly deposit rate >  ";
-			getline(cin, input);
-			if (!check_input(input, flag))
-			{
-				cout << "Wrong input!\n";
-				correct_input = false;
-			}
-			else
-				correct_input = true;
-		}
-		correct_input = false;
+		flag = true;
+		user_input(flag, input);
 		double rate = stod(input);
-		flag = 1;
-		while (!correct_input)
-		{
-			cout << "Input the number of months > ";
-			getline(cin, input);
-			if (!check_input(input, flag))
-			{
-				cout << "Wrong input! Please enter an integer\n";
-				correct_input = false;
-			}
-			else
-				correct_input = true;
-		}
+		months_input(input);
 		int months = stoi(input);
 		cout << "Result: " << percentage(deposit, rate, months) << endl << "Continue? (any symbol/n)> ";
 		getline(cin, answ);
-	} while (answ != "n");
+	}
 }
