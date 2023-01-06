@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -54,9 +54,12 @@ void magic(int& exam_date, int& current_date, const vector <int>& saved_info)
 void saving_info(const vector <int>& saved_info)
 {
 	fstream fout("saved.txt");
-	for (int i = 0; i < saved_info.size(); ++i)
+	for (int i = 0; i < 4; ++i)
 	{
-		fout << saved_info[i] << endl;
+		if (i == 3)
+			fout << saved_info[i];
+		else
+			fout << saved_info[i] << endl;
 	}
 	fout.close();
 }
@@ -72,5 +75,3 @@ int main()
 	saving_info(saved_info);
 	magic(exam_date, current_date, saved_info);
 }
-
-
